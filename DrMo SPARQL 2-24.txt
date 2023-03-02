@@ -1,0 +1,80 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX drmo: <http://www.semanticweb.org/ontologies/2022/titutuli/nivedita/drmo#>
+
+
+#1.	Name a dental restorative material with high strength.
+SELECT *
+WHERE {?DentalResotrativeMaterial a drmo:HighStrengthDDRM.}
+
+#2. Which material should a dentist consider for the restoration of a patient with epilepsy?
+# Epileptic patient need a material hasPlacementTechnique less complex placement technique
+# Impemented as SWRL rule and SPARQL Query
+# SPARQL Query
+SELECT *
+WHERE {?Patient a  drmo:EpilepticDentalPatient.
+       ?DentalMaterial drmo:needPlacementTechnique ?PlacementTechnique.
+	   ?PlacementTechnique a drmo:LessComplexTechnique.}
+#SWRL Rule	   
+#Rule: EpilepticDentalPatient(?p), needPlacementTechnique(?do, ?pt), LessComplexTechnique(?pt) 
+#-> suitableDentalMaterial(?p, ?do)
+	   
+#3. Which dental restorative material is MRI safe?
+SELECT *
+WHERE {?s drmo:hasMRICompatibility true}
+
+#4. Name a direct restorative material which is best for a mentally diabled patient.
+# mentally disabled patients are very prone to tooth caries and
+#need a material hasAnticariogenic property value True and 
+#material hasPlacementTechnique less complex placement technique] 
+SELECT *
+WHERE {?Patient a  drmo:MentallyDisabledDentalPatient.
+       ?DentalMaterial drmo:needPlacementTechnique ?PlacementTechnique;
+		               drmo:hasAnticariogenicProperty true.
+	   ?PlacementTechnique a drmo:LessComplexTechnique.}
+
+#5. Which restorative material is suitable for difficult access area of mouth?
+SELECT *
+WHERE {?rmo a drmo:RestorationMaterialObject;
+            drmo:hasViscosity drmo:Low_Viscosity;
+			drmo:hasCuringDepth drmo:4mm.}
+
+#6. Which restorative material is economical as well as durable?
+SELECT * 
+WHERE {?ddrm a drmo:HighDurableDDRM;
+		drmo:hasCost drmo:Low_Cost.}
+		
+
+#7. Which one is the best restorative material both esthetically and functionally for anterior teeth?
+SELECT *
+WHERE {?ddrm a drmo:HighStrengthDDRM;
+		a drmo:PerfectAestheticDDRM.}
+
+#8. Which material is suitable for a caries prone child with deciduous dentition?
+SELECT *
+WHERE {?rmo drmo:hasAnticariogenicProperty true.}
+
+#9. Which material should a clinician consider for a young patient?
+#  High strength, perfect or nearly perfect aesthetic, high durable material
+SELECT *
+WHERE {{?ddrm a drmo:HighStrengthDDRM;
+        a drmo:PerfectAestheticDDRM;
+		a drmo:HighDurableDDRM.} UNION
+		{?ddrm a drmo:HighStrengthDDRM;
+        a drmo:NearlyPerfectAestheticDDRM;
+		a drmo:HighDurableDDRM.}}
+	
+
+#10. Which material is the choice for a deep caries in a less equipped clinic of a village?
+SELECT *
+WHERE {?ddrm drmo:needPlacementTechnique ?pt;
+	   drmo:hasCost drmo:Low_Cost.
+	   ?pt a drmo:LessComplexTechnique.}
+
+# Misc. Useful Queries
+SELECT *
+WHERE {?p rdfs:domain drmo:ManufacturedObject}
+
+SELECT *
+WHERE {?p rdfs:domain drmo:DentalMaterialObject}
